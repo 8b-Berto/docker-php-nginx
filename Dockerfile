@@ -1,10 +1,12 @@
-FROM php:7.2-fpm
+FROM php:7.4-fpm
 
 # Set working directory
 WORKDIR /var/www
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
+    libonig-dev \
+    libzip-dev zip unzip \
     build-essential \
     mariadb-client \
     libpq-dev \
@@ -22,7 +24,9 @@ RUN apt-get update && apt-get install -y \
 
 
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/conf.d /etc/nginx/conf.d/
+COPY nginx/conf.d /etc/nginx/conf.d
+
+COPY ssl /etc/nginx/ssl
 
 COPY php/local.ini /usr/local/etc/php/conf.d/local.ini
 
@@ -33,7 +37,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
 RUN docker-php-ext-install pdo pdo_pgsql
-RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install gd
 
 # Install composer
