@@ -41,4 +41,3 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 EXPOSE 80 443
 CMD ["bash","-c","nginx; php-fpm"]
-
